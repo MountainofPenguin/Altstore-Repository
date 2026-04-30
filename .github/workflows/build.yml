@@ -46,17 +46,19 @@ jobs:
 
 
 
+      - name: Download decrypted YouTube IPA
+        run: |
+          curl -L --retry 3 "${{ steps.cfg.outputs.yt_url }}" -o /tmp/YouTube.ipa
+          ls -lh /tmp/YouTube.ipa
+          file /tmp/YouTube.ipa
+
       - name: Inject tweaks with pyzule
         run: |
           /tmp/pyzule-env/bin/python3 /tmp/pyzule/pyzule.py -i /tmp/YouTube.ipa -f /tmp/tweaks/YouMod.deb /tmp/tweaks/YouPiP.deb /tmp/tweaks/YTUHD.deb /tmp/tweaks/ReturnYTDislikes.deb -o /tmp/${{ steps.cfg.outputs.ipa_name }}
 
 
       # 4. Download the decrypted YouTube IPA you provided
-      - name: Download decrypted YouTube IPA
-        run: |
-          curl -L --retry 3 "${{ steps.cfg.outputs.yt_url }}" -o /tmp/YouTube.ipa
-          ls -lh /tmp/YouTube.ipa
-          file /tmp/YouTube.ipa
+     
 
 
       # 5. Download YouMod tweak .deb files from the official repo
