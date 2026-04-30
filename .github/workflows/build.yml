@@ -39,9 +39,9 @@ jobs:
       - name: Install pyzule
         run: |
           git clone https://github.com/asdfzxcvbn/pyzule /tmp/pyzule
-          ls /tmp/pyzule/
-          pip3 install requests --break-system-packages
+          pip3 install requests lief --break-system-packages
           chmod +x /tmp/pyzule/pyzule.py
+
 
 
 
