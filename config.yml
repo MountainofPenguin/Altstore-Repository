@@ -3,7 +3,9 @@
 # Change youtube_ipa_url to your latest decrypted IPA link
 # and update youtube_version to match.
 # Commit this file → GitHub Actions will build automatically.
+# https://decrypt.whoeevee.com/packages/r2vwjp2s/com.google.ios.youtube-21.16.2.ipa
+# https://decrypt.whoeevee.com/packages/vnuvtpbt/com.google.ios.youtube-21.17.3.ipa
 # -------------------------------------------------------
 
-youtube_ipa_url: "https://decrypt.whoeevee.com/packages/vnuvtpbt/com.google.ios.youtube-21.17.3.ipa"
+youtube_ipa_url: "https://decrypt.whoeevee.com/packages/r2vwjp2s/com.google.ios.youtube-21.16.2.ipa"
 youtube_version: "21.17.3"
