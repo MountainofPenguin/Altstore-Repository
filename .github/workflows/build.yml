@@ -38,11 +38,16 @@ jobs:
       # 3. Install Azule (tweak injector)
       - name: Install pyzule
         run: |
-          pip3 install pyzule --break-system-packages
+          git clone https://github.com/asdfzxcvbn/pyzule /tmp/pyzule
+          pip3 install -r /tmp/pyzule/requirements.txt --break-system-packages
+          sudo ln -sf /tmp/pyzule/pyzule.py /usr/local/bin/pyzule
+          chmod +x /tmp/pyzule/pyzule.py
+
 
       - name: Inject tweaks with pyzule
         run: |
-          pyzule -i /tmp/YouTube.ipa -f /tmp/tweaks/YouMod.deb /tmp/tweaks/YouPiP.deb /tmp/tweaks/YTUHD.deb /tmp/tweaks/ReturnYTDislikes.deb -o /tmp/${{ steps.cfg.outputs.ipa_name }}
+          python3 /tmp/pyzule/pyzule.py -i /tmp/YouTube.ipa -f /tmp/tweaks/YouMod.deb /tmp/tweaks/YouPiP.deb /tmp/tweaks/YTUHD.deb /tmp/tweaks/ReturnYTDislikes.deb -o /tmp/${{ steps.cfg.outputs.ipa_name }}
+
 
 
       # 4. Download the decrypted YouTube IPA you provided
