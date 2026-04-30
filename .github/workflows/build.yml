@@ -39,9 +39,11 @@ jobs:
       - name: Install pyzule
         run: |
           git clone https://github.com/asdfzxcvbn/pyzule /tmp/pyzule
+          grep "^import\|^from" /tmp/pyzule/pyzule.py
           python3 -m venv /tmp/pyzule-env
-          /tmp/pyzule-env/bin/pip install requests lief Pillow
+          /tmp/pyzule-env/bin/pip install requests lief Pillow orjson
           chmod +x /tmp/pyzule/pyzule.py
+
 
 
       - name: Inject tweaks with pyzule
