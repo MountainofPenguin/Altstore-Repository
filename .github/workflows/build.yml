@@ -60,24 +60,43 @@ jobs:
         run: |
           mkdir -p /tmp/tweaks /tmp/dylibs
 
-          # YouMod — from GitHub releases (this one does publish debs)
-          curl -L "https://github.com/Tonwalter888/YouMod/releases/latest/download/com.tonwalter888.youmod.deb" -o /tmp/tweaks/YouMod.deb
+          # Use GitHub API to find and download actual .deb assets dynamically
+          download_deb() {
+            local repo=$1
+            local outfile=$2
+            local url=$(curl -s "https://api.github.com/repos/$repo/releases/latest" \
+              -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+              | python3 -c "import sys,json; assets=json.load(sys.stdin).get('assets',[]); debs=[a['browser_download_url'] for a in assets if a['name'].endswith('.deb')]; print(debs[0] if debs else '')")
+            if [ -z "$url" ]; then
+              echo "WARNING: No .deb found in $repo releases, skipping"
+            else
+              echo "Downloading $url"
+              curl -L "$url" -o "$outfile"
+            fi
+          }
 
-          # PoomSmart tweaks — must come from his actual repo, not GitHub releases
-          curl -L "https://poomsmart.github.io/repo/debs/youpip.deb" -o /tmp/tweaks/YouPiP.deb
-          curl -L "https://poomsmart.github.io/repo/debs/ytuhd.deb" -o /tmp/tweaks/YTUHD.deb
-          curl -L "https://poomsmart.github.io/repo/debs/returnyoutubedislikes.deb" -o /tmp/tweaks/ReturnYTDislikes.deb
+          download_deb "Tonwalter888/YouMod" /tmp/tweaks/YouMod.deb
+          download_deb "PoomSmart/YouPiP" /tmp/tweaks/YouPiP.deb
+          download_deb "PoomSmart/YTUHD" /tmp/tweaks/YTUHD.deb
+          download_deb "PoomSmart/Return-YouTube-Dislikes" /tmp/tweaks/ReturnYTDislikes.deb
 
           echo "Downloaded tweaks:"
           ls -lh /tmp/tweaks/
 
-          # Extract debs using ar (macOS built-in)
+          # Extract only debs that actually downloaded (skip 9-byte failures)
           for deb in /tmp/tweaks/*.deb; do
+            size=$(stat -f%z "$deb")
+            if [ "$size" -lt 1000 ]; then
+              echo "Skipping $deb (too small: ${size} bytes, likely failed download)"
+              continue
+            fi
             name=$(basename "$deb" .deb)
             mkdir -p /tmp/dylibs/$name
             cd /tmp/dylibs/$name
             ar x "$deb"
-            tar -xf data.tar* 2>/dev/null || true
+            if ls data.tar* 1>/dev/null 2>&1; then
+              tar -xf data.tar* 2>/dev/null || true
+            fi
             find . -name "*.dylib" -exec cp {} /tmp/dylibs/ \;
             find . -name "*.framework" -type d -exec cp -r {} /tmp/dylibs/ \;
             cd /tmp
@@ -85,6 +104,7 @@ jobs:
 
           echo "Extracted dylibs:"
           ls -lh /tmp/dylibs/
+
 
 
       - name: Inject tweaks with pyzule
