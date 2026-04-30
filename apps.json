@@ -22,6 +22,15 @@
           "date": "2026-04-30",
           "localizedDescription": "Auto-built from YouTube 21.17.3",
           "downloadURL": "https://github.com/MountainofPenguin/Altstore-Repository/releases/download/v21.17.3/YouMod_21.17.3.ipa",
+          "size": 127666688,
+          "minOSVersion": "14.0",
+          "maxOSVersion": ""
+        },
+        {
+          "version": "21.17.3-youmod",
+          "date": "2026-04-30",
+          "localizedDescription": "Auto-built from YouTube 21.17.3",
+          "downloadURL": "https://github.com/MountainofPenguin/Altstore-Repository/releases/download/v21.17.3/YouMod_21.17.3.ipa",
           "size": 127648010,
           "minOSVersion": "14.0",
           "maxOSVersion": ""
@@ -50,15 +59,6 @@
           "localizedDescription": "Auto-built from YouTube 21.17.3",
           "downloadURL": "https://github.com/MountainofPenguin/Altstore-Repository/releases/download/v21.17.3/YouMod_21.17.3.ipa",
           "size": 119991506,
-          "minOSVersion": "14.0",
-          "maxOSVersion": ""
-        },
-        {
-          "version": "21.16.2-youmod",
-          "date": "2026-04-30",
-          "localizedDescription": "Auto-built from YouTube 21.16.2",
-          "downloadURL": "https://github.com/MountainofPenguin/Altstore-Repository/releases/download/v21.16.2/YouMod_21.16.2.ipa",
-          "size": 119151757,
           "minOSVersion": "14.0",
           "maxOSVersion": ""
         }
