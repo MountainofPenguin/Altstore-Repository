@@ -35,13 +35,14 @@ jobs:
           echo "IPA URL: $YT_URL"
 
 
-      # 3. Install Azule (tweak injector)
+      # 3. Install Azule/pyzule (tweak injector)
       - name: Install pyzule
         run: |
           git clone https://github.com/asdfzxcvbn/pyzule /tmp/pyzule
-          pip3 install -r /tmp/pyzule/requirements.txt --break-system-packages
-          sudo ln -sf /tmp/pyzule/pyzule.py /usr/local/bin/pyzule
+          ls /tmp/pyzule/
+          pip3 install requests --break-system-packages
           chmod +x /tmp/pyzule/pyzule.py
+
 
 
       - name: Inject tweaks with pyzule
