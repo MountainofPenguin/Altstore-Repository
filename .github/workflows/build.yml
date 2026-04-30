@@ -1,0 +1,154 @@
+name: Build YouMod IPA & Update Repo
+
+# -------------------------------------------------------
+# Triggers ONLY when config.yml is pushed (i.e. when you
+# update the YouTube IPA URL). Also supports manual runs.
+# -------------------------------------------------------
+on:
+  push:
+    paths:
+      - 'config.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      # 1. Checkout this repo
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      # 2. Read config.yml values
+      - name: Read config
+        id: cfg
+        run: |
+          YT_URL=$(grep 'youtube_ipa_url' config.yml | sed "s/youtube_ipa_url: //;s/[\"' ]//g")
+          YT_VER=$(grep 'youtube_version' config.yml | sed "s/youtube_version: //;s/[\"' ]//g")
+          echo "yt_url=$YT_URL" >> $GITHUB_OUTPUT
+          echo "yt_ver=$YT_VER" >> $GITHUB_OUTPUT
+          echo "tag=v$YT_VER" >> $GITHUB_OUTPUT
+          echo "ipa_name=YouMod-$YT_VER.ipa" >> $GITHUB_OUTPUT
+          echo "Detected YouTube version: $YT_VER"
+          echo "IPA URL: $YT_URL"
+
+      # 3. Install Azule (tweak injector)
+      - name: Install Azule
+        run: |
+          git clone https://github.com/Al4ise/Azule /tmp/Azule
+          sudo ln -sf /tmp/Azule/azule /usr/local/bin/azule
+          chmod +x /tmp/Azule/azule
+
+      # 4. Download the decrypted YouTube IPA you provided
+      - name: Download decrypted YouTube IPA
+        run: |
+          curl -L "${{ steps.cfg.outputs.yt_url }}" -o /tmp/YouTube.ipa
+          echo "Downloaded IPA:"
+          ls -lh /tmp/YouTube.ipa
+
+      # 5. Download YouMod tweak .deb files from the official repo
+      #    Update these URLs whenever Tonwalter888 releases a new YouMod version
+      - name: Download YouMod tweaks
+        run: |
+          mkdir -p /tmp/tweaks
+
+          # YouMod core — check https://github.com/Tonwalter888/YouMod/releases for latest
+          curl -L "https://github.com/Tonwalter888/YouMod/releases/latest/download/com.tonwalter888.youmod.deb" \
+            -o /tmp/tweaks/YouMod.deb
+
+          # Common dependencies — update URLs if needed
+          curl -L "https://github.com/PoomSmart/YouPiP/releases/latest/download/com.PS.YouPiP.deb" \
+            -o /tmp/tweaks/YouPiP.deb
+          curl -L "https://github.com/PoomSmart/YTUHD/releases/latest/download/com.PS.YTUHD.deb" \
+            -o /tmp/tweaks/YTUHD.deb
+          curl -L "https://github.com/PoomSmart/Return-YouTube-Dislikes/releases/latest/download/com.PS.ReturnYouTubeDislikes.deb" \
+            -o /tmp/tweaks/ReturnYTDislikes.deb
+
+          echo "Downloaded tweaks:"
+          ls -lh /tmp/tweaks/
+
+      # 6. Inject all tweaks into the IPA using Azule
+      - name: Inject tweaks with Azule
+        run: |
+          azule \
+            -i /tmp/YouTube.ipa \
+            -f /tmp/tweaks/YouMod.deb \
+               /tmp/tweaks/YouPiP.deb \
+               /tmp/tweaks/YTUHD.deb \
+               /tmp/tweaks/ReturnYTDislikes.deb \
+            -o /tmp/${{ steps.cfg.outputs.ipa_name }}
+
+          echo "Build complete:"
+          ls -lh /tmp/${{ steps.cfg.outputs.ipa_name }}
+
+      # 7. Get IPA file size (needed for AltStore JSON)
+      - name: Get IPA size
+        id: size
+        run: |
+          SIZE=$(stat -f%z /tmp/${{ steps.cfg.outputs.ipa_name }})
+          echo "size=$SIZE" >> $GITHUB_OUTPUT
+
+      # 8. Create/update GitHub Release and upload IPA
+      - name: Upload IPA to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.cfg.outputs.tag }}
+          name: "YouMod ${{ steps.cfg.outputs.yt_ver }}"
+          body: |
+            Auto-built YouMod IPA for YouTube ${{ steps.cfg.outputs.yt_ver }}
+            
+            Built by GitHub Actions on ${{ github.run_id }}
+          files: /tmp/${{ steps.cfg.outputs.ipa_name }}
+          make_latest: true
+
+      # 9. Update apps.json with new version info so Signulous picks it up
+      - name: Update AltStore repo JSON
+        run: |
+          TODAY=$(date -u +%Y-%m-%d)
+          YT_VER="${{ steps.cfg.outputs.yt_ver }}"
+          IPA_NAME="${{ steps.cfg.outputs.ipa_name }}"
+          SIZE="${{ steps.size.outputs.size }}"
+          REPO_USER="${{ github.repository_owner }}"
+          REPO_NAME="${{ github.event.repository.name }}"
+          DOWNLOAD_URL="https://github.com/$REPO_USER/$REPO_NAME/releases/download/v$YT_VER/$IPA_NAME"
+
+          # Use Python to safely edit the JSON
+          python3 - <<EOF
+          import json, sys
+
+          with open("apps.json", "r") as f:
+              data = json.load(f)
+
+          new_version = {
+              "version": f"$YT_VER-youmod",
+              "date": "$TODAY",
+              "localizedDescription": f"Auto-built from YouTube $YT_VER",
+              "downloadURL": "$DOWNLOAD_URL",
+              "size": $SIZE,
+              "minOSVersion": "14.0",
+              "maxOSVersion": ""
+          }
+
+          # Prepend new version so latest is always first
+          data["apps"][0]["versions"].insert(0, new_version)
+
+          # Keep only last 5 versions to avoid bloat
+          data["apps"][0]["versions"] = data["apps"][0]["versions"][:5]
+
+          with open("apps.json", "w") as f:
+              json.dump(data, f, indent=2)
+
+          print(f"apps.json updated: YouTube {YT_VER}")
+          EOF
+
+      # 10. Commit updated apps.json back to the repo
+      - name: Commit updated apps.json
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add apps.json
+          git commit -m "Auto-update: YouMod for YouTube ${{ steps.cfg.outputs.yt_ver }}"
+          git push
