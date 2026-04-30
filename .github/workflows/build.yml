@@ -182,7 +182,7 @@ jobs:
       - name: Inject tweaks into IPA with cyan
         run: |
           cd ${{ github.workspace }}
-          ~/.local/bin/cyan -i youtube.ipa -o "${{ env.IPA_NAME }}" -uwef *.deb -n "YouTube" -b com.google.ios.youtube -q
+          ~/.local/bin/cyan -i youtube.ipa -o "${{ env.IPA_NAME }}" -uwef *.deb -n "YouTube" -b com.google.ios.youtube -s
           echo "Output IPA: $(ls -lh ${{ env.IPA_NAME }})"
 
       - name: Get IPA size
