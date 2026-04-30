@@ -1,0 +1,214 @@
+name: Build YouMod IPA & Update Repo
+
+# -------------------------------------------------------
+# Triggers ONLY when config.yml is pushed (i.e. when you
+# update the YouTube IPA URL). Also supports manual runs.
+# -------------------------------------------------------
+on:
+  push:
+    paths:
+      - 'config.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      # 2. Read config.yml values
+      - name: Read config
+        id: cfg
+        run: |
+          YT_URL=$(python3 -c "import re; line=open('config.yml').read(); print(re.search(r'youtube_ipa_url:\s*[\"\'](.*?)[\"\']', line).group(1))")
+          YT_VER=$(python3 -c "import re; line=open('config.yml').read(); print(re.search(r'youtube_version:\s*[\"\'](.*?)[\"\']', line).group(1))")
+          echo "yt_url=$YT_URL" >> $GITHUB_OUTPUT
+          echo "yt_ver=$YT_VER" >> $GITHUB_OUTPUT
+          echo "tag=v$YT_VER" >> $GITHUB_OUTPUT
+          echo "ipa_name=YouMod-$YT_VER.ipa" >> $GITHUB_OUTPUT
+          echo "Detected YouTube version: $YT_VER"
+          echo "IPA URL: $YT_URL"
+
+
+      # 3. Install Azule/pyzule (tweak injector)
+      #- name: Install pyzule
+      #  run: |
+      #    brew install ldid dpkg
+      #    git clone https://github.com/asdfzxcvbn/pyzule /tmp/pyzule
+      #    python3 -m venv /tmp/pyzule-env
+      #    /tmp/pyzule-env/bin/pip install requests lief Pillow orjson
+      #    chmod +x /tmp/pyzule/pyzule.py
+      #    mkdir -p /Users/runner/.config/pyzule
+      #    curl -L "https://github.com/nickchan9394/babelfishx/raw/main/CydiaSubstrate.framework.zip" -o /tmp/cs.zip
+      #    unzip /tmp/cs.zip -d /Users/runner/.config/pyzule/
+
+      - name: Install cyan (pyzule-rw)
+        run: |
+          brew install ldid dpkg pipx
+          pipx install --force https://github.com/asdfzxcvbn/pyzule-rw/archive/main.zip
+          pipx inject cyan lief
+
+     
+
+      # 4. Download the decrypted YouTube IPA you provided
+      - name: Download decrypted YouTube IPA
+        run: |
+          curl -L --retry 3 "${{ steps.cfg.outputs.yt_url }}" -o /tmp/YouTube.ipa
+          ls -lh /tmp/YouTube.ipa
+          file /tmp/YouTube.ipa
+
+      # 5. Download YouMod tweak .deb files from the official repo
+      #    Update these URLs whenever Tonwalter888 releases a new YouMod version
+      - name: Download and extract YouMod tweaks
+        run: |
+          mkdir -p /tmp/tweaks /tmp/dylibs
+
+          # Use GitHub API to find and download actual .deb assets dynamically
+          download_deb() {
+            local repo=$1
+            local outfile=$2
+            local url=$(curl -s "https://api.github.com/repos/$repo/releases/latest" \
+              -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+              | python3 -c "import sys,json; assets=json.load(sys.stdin).get('assets',[]); debs=[a['browser_download_url'] for a in assets if a['name'].endswith('.deb')]; print(debs[0] if debs else '')")
+            if [ -z "$url" ]; then
+              echo "WARNING: No .deb found in $repo releases, skipping"
+            else
+              echo "Downloading $url"
+              curl -L "$url" -o "$outfile"
+            fi
+          }
+
+          download_deb "Tonwalter888/YouMod" /tmp/tweaks/YouMod.deb
+          download_deb "PoomSmart/YouPiP" /tmp/tweaks/YouPiP.deb
+          download_deb "PoomSmart/YTUHD" /tmp/tweaks/YTUHD.deb
+          download_deb "PoomSmart/Return-YouTube-Dislikes" /tmp/tweaks/ReturnYTDislikes.deb
+
+          echo "Downloaded tweaks:"
+          ls -lh /tmp/tweaks/
+
+          # Extract only debs that actually downloaded (skip 9-byte failures)
+          for deb in /tmp/tweaks/*.deb; do
+            size=$(stat -f%z "$deb")
+            if [ "$size" -lt 1000 ]; then
+              echo "Skipping $deb (too small: ${size} bytes, likely failed download)"
+              continue
+            fi
+            name=$(basename "$deb" .deb)
+            mkdir -p /tmp/dylibs/$name
+            cd /tmp/dylibs/$name
+            ar x "$deb"
+            if ls data.tar* 1>/dev/null 2>&1; then
+              tar -xf data.tar* 2>/dev/null || true
+            fi
+            find . -name "*.dylib" -exec cp {} /tmp/dylibs/ \;
+            find . -name "*.framework" -type d -exec cp -r {} /tmp/dylibs/ \;
+            cd /tmp
+          done
+
+          echo "Extracted dylibs:"
+          ls -lh /tmp/dylibs/
+
+      - name: Pre-download pyzule dependencies
+        run: |
+          mkdir -p /Users/runner/.config/pyzule
+          /tmp/pyzule-env/bin/python3 -c "
+          import os, urllib.request
+          dest = os.path.expanduser('~/.config/pyzule')
+          os.makedirs(dest, exist_ok=True)
+          # Trigger pyzule's own dependency download by importing its setup
+          import sys
+          sys.argv = ['pyzule.py', '--help']
+          " 2>/dev/null || true
+          ls /Users/runner/.config/pyzule/
+
+
+      - name: Build YouMod using official workflow
+        run: |
+          # Clone YouMod and use its own Makefile/Theos build
+          git clone https://github.com/Tonwalter888/YouMod /tmp/YouMod
+          cd /tmp/YouMod
+          # The official workflow accepts a YT IPA URL as input
+          # We replicate what its GitHub Action does
+          cat .github/workflows/*.yml
+
+
+
+     # - name: Inject tweaks with cyan
+     #   run: |
+     #     ~/.local/bin/cyan -i /tmp/YouTube.ipa -f /tmp/tweaks/YouMod.deb -o /tmp/${{ steps.cfg.outputs.ipa_name }}
+
+
+      #- name: Inject tweaks with pyzule
+      #  run: |
+      #    /tmp/pyzule-env/bin/python3 /tmp/pyzule/pyzule.py -i /tmp/YouTube.ipa -f /tmp/tweaks/YouMod.deb /tmp/tweaks/YouPiP.deb /tmp/tweaks/YTUHD.deb /tmp/tweaks/ReturnYTDislikes.deb -o /tmp/${{ steps.cfg.outputs.ipa_name }}
+
+      # 6. Inject all tweaks into the IPA using Azule
+      #- name: Inject tweaks with Azule
+       # run: |
+       #   azule -i /tmp/YouTube.ipa -f /tmp/tweaks/YouMod.deb /tmp/tweaks/YouPiP.deb /tmp/tweaks/YTUHD.deb /tmp/tweaks/ReturnYTDislikes.deb -o /tmp/${{ steps.cfg.outputs.ipa_name }}
+
+
+      # 7. Get IPA file size (needed for AltStore JSON)
+      - name: Get IPA size
+        id: size
+        run: |
+          SIZE=$(stat -f%z /tmp/${{ steps.cfg.outputs.ipa_name }})
+          echo "size=$SIZE" >> $GITHUB_OUTPUT
+
+      # 8. Create/update GitHub Release and upload IPA
+      - name: Upload IPA to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.cfg.outputs.tag }}
+          name: "YouMod ${{ steps.cfg.outputs.yt_ver }}"
+          body: |
+            Auto-built YouMod IPA for YouTube ${{ steps.cfg.outputs.yt_ver }}
+            
+            Built by GitHub Actions on ${{ github.run_id }}
+          files: /tmp/${{ steps.cfg.outputs.ipa_name }}
+          make_latest: true
+
+      # 9. Update apps.json with new version info so Signulous picks it up
+      - name: Update AltStore repo JSON
+        run: |
+          TODAY=$(date -u +%Y-%m-%d)
+          YT_VER="${{ steps.cfg.outputs.yt_ver }}"
+          IPA_NAME="${{ steps.cfg.outputs.ipa_name }}"
+          SIZE="${{ steps.size.outputs.size }}"
+          REPO_USER="${{ github.repository_owner }}"
+          REPO_NAME="${{ github.event.repository.name }}"
+          DOWNLOAD_URL="https://github.com/$REPO_USER/$REPO_NAME/releases/download/v$YT_VER/$IPA_NAME"
+          python3 -c "
+          import json
+          with open('apps.json') as f:
+              data = json.load(f)
+          new_version = {
+              'version': '$YT_VER-youmod',
+              'date': '$TODAY',
+              'localizedDescription': 'Auto-built from YouTube $YT_VER',
+              'downloadURL': '$DOWNLOAD_URL',
+              'size': $SIZE,
+              'minOSVersion': '14.0',
+              'maxOSVersion': ''
+          }
+          data['apps'][0]['versions'].insert(0, new_version)
+          data['apps'][0]['versions'] = data['apps'][0]['versions'][:5]
+          with open('apps.json', 'w') as f:
+              json.dump(data, f, indent=2)
+          print('apps.json updated')
+          "
+
+
+      # 10. Commit updated apps.json back to the repo
+      - name: Commit updated apps.json
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add apps.json
+          git commit -m "Auto-update: YouMod for YouTube ${{ steps.cfg.outputs.yt_ver }}"
+          git push
