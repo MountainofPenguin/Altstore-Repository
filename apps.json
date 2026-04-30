@@ -1,10 +1,10 @@
 {
   "name": "YouMod Repo",
-  "identifier": "com.YOURNAME.youmod-repo",
+  "identifier": "com.google.ios.youtube",
   "subtitle": "Automated YouMod builds for Signulous",
   "description": "Auto-built YouMod IPA — updated whenever a new YouTube version is available.",
-  "iconURL": "https://raw.githubusercontent.com/YOURUSER/YOURREPO/main/assets/icon.png",
-  "website": "https://github.com/YOURUSER/YOURREPO",
+  "iconURL": "https://raw.githubusercontent.com/MountainofPenguin/Altstore-Repository/main/assets/IMG_2642.png",
+  "website": "https://github.com/MountainofPenguin/Altstore-Repository",
   "apps": [
     {
       "name": "YouMod",
@@ -12,7 +12,7 @@
       "developerName": "Tonwalter888 + YOURNAME",
       "subtitle": "YouTube with YouMod tweaks",
       "localizedDescription": "YouMod brings back YTLite-style features: ad removal, background playback, UI customisation, and more — without a paywall.",
-      "iconURL": "https://raw.githubusercontent.com/YOURUSER/YOURREPO/main/assets/icon.png",
+      "iconURL": "https://raw.githubusercontent.com/MountainofPenguin/Altstore-Repository/main/assets/icon.png",
       "tintColor": "FF0000",
       "screenshots": [],
       "versions": [
@@ -20,7 +20,7 @@
           "version": "YOUTUBE_VERSION-youmod",
           "date": "YYYY-MM-DD",
           "localizedDescription": "Auto-built from YouTube YOUTUBE_VERSION",
-          "downloadURL": "https://github.com/YOURUSER/YOURREPO/releases/download/vYOUTUBE_VERSION/YouMod-YOUTUBE_VERSION.ipa",
+          "downloadURL": "https://github.com/MountainofPenguin/Altstore-Repository/releases/download/vYOUTUBE_VERSION/YouMod-YOUTUBE_VERSION.ipa",
           "size": 0,
           "minOSVersion": "14.0",
           "maxOSVersion": ""
