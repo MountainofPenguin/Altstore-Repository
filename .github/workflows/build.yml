@@ -291,7 +291,7 @@ jobs:
       - name: Build iSponsorBlock
         run: |
           cd iSponsorBlock
-          make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless ARCHS=arm64
+          make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless ARCHS=arm64 TARGET=iphone:clang:18.6
           mv packages/*.deb ${{ github.workspace }}/isb.deb
 
       - name: List built debs
