@@ -56,28 +56,36 @@ jobs:
 
       # 5. Download YouMod tweak .deb files from the official repo
       #    Update these URLs whenever Tonwalter888 releases a new YouMod version
-      - name: Download YouMod tweaks
+      - name: Download and extract YouMod tweaks
         run: |
-          mkdir -p /tmp/tweaks
-
-          # YouMod core — check https://github.com/Tonwalter888/YouMod/releases for latest
-          curl -L "https://github.com/Tonwalter888/YouMod/releases/latest/download/com.tonwalter888.youmod.deb" \
-            -o /tmp/tweaks/YouMod.deb
-
-          # Common dependencies — update URLs if needed
-          curl -L "https://github.com/PoomSmart/YouPiP/releases/latest/download/com.PS.YouPiP.deb" \
-            -o /tmp/tweaks/YouPiP.deb
-          curl -L "https://github.com/PoomSmart/YTUHD/releases/latest/download/com.PS.YTUHD.deb" \
-            -o /tmp/tweaks/YTUHD.deb
-          curl -L "https://github.com/PoomSmart/Return-YouTube-Dislikes/releases/latest/download/com.PS.ReturnYouTubeDislikes.deb" \
-            -o /tmp/tweaks/ReturnYTDislikes.deb
-
-          echo "Downloaded tweaks:"
-          ls -lh /tmp/tweaks/
+          mkdir -p /tmp/tweaks /tmp/dylibs
+          curl -L "https://github.com/Tonwalter888/YouMod/releases/latest/download/com.tonwalter888.youmod.deb" -o /tmp/tweaks/YouMod.deb
+          curl -L "https://github.com/PoomSmart/YouPiP/releases/latest/download/com.PS.YouPiP.deb" -o /tmp/tweaks/YouPiP.deb
+          curl -L "https://github.com/PoomSmart/YTUHD/releases/latest/download/com.PS.YTUHD.deb" -o /tmp/tweaks/YTUHD.deb
+          curl -L "https://github.com/PoomSmart/Return-YouTube-Dislikes/releases/latest/download/com.PS.ReturnYouTubeDislikes.deb" -o /tmp/tweaks/ReturnYTDislikes.deb
+          for deb in /tmp/tweaks/*.deb; do
+            name=$(basename "$deb" .deb)
+            mkdir -p /tmp/dylibs/$name
+            cd /tmp/dylibs/$name
+            ar x "$deb"
+            tar -xf data.tar* 2>/dev/null || true
+            find . -name "*.dylib" -exec cp {} /tmp/dylibs/ \;
+            find . -name "*.framework" -type d -exec cp -r {} /tmp/dylibs/ \;
+            cd /tmp
+          done
+          echo "Extracted dylibs:"
+          ls -lh /tmp/dylibs/
 
       - name: Inject tweaks with pyzule
         run: |
-          /tmp/pyzule-env/bin/python3 /tmp/pyzule/pyzule.py -i /tmp/YouTube.ipa -f /tmp/tweaks/YouMod.deb /tmp/tweaks/YouPiP.deb /tmp/tweaks/YTUHD.deb /tmp/tweaks/ReturnYTDislikes.deb -o /tmp/${{ steps.cfg.outputs.ipa_name }}
+          DYLIBS=$(find /tmp/dylibs -maxdepth 1 \( -name "*.dylib" -o -name "*.framework" \) | tr '\n' ' ')
+          echo "Injecting: $DYLIBS"
+          /tmp/pyzule-env/bin/python3 /tmp/pyzule/pyzule.py -i /tmp/YouTube.ipa -f $DYLIBS -o /tmp/${{ steps.cfg.outputs.ipa_name }}
+
+
+      #- name: Inject tweaks with pyzule
+      #  run: |
+      #    /tmp/pyzule-env/bin/python3 /tmp/pyzule/pyzule.py -i /tmp/YouTube.ipa -f /tmp/tweaks/YouMod.deb /tmp/tweaks/YouPiP.deb /tmp/tweaks/YTUHD.deb /tmp/tweaks/ReturnYTDislikes.deb -o /tmp/${{ steps.cfg.outputs.ipa_name }}
 
       # 6. Inject all tweaks into the IPA using Azule
       #- name: Inject tweaks with Azule
