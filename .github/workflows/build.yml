@@ -36,19 +36,24 @@ jobs:
 
 
       # 3. Install Azule/pyzule (tweak injector)
-      - name: Install pyzule
+      #- name: Install pyzule
+      #  run: |
+      #    brew install ldid dpkg
+      #    git clone https://github.com/asdfzxcvbn/pyzule /tmp/pyzule
+      #    python3 -m venv /tmp/pyzule-env
+      #    /tmp/pyzule-env/bin/pip install requests lief Pillow orjson
+      #    chmod +x /tmp/pyzule/pyzule.py
+      #    mkdir -p /Users/runner/.config/pyzule
+      #    curl -L "https://github.com/nickchan9394/babelfishx/raw/main/CydiaSubstrate.framework.zip" -o /tmp/cs.zip
+      #    unzip /tmp/cs.zip -d /Users/runner/.config/pyzule/
+
+      - name: Install cyan (pyzule-rw)
         run: |
-          brew install ldid dpkg
-          git clone https://github.com/asdfzxcvbn/pyzule /tmp/pyzule
-          python3 -m venv /tmp/pyzule-env
-          /tmp/pyzule-env/bin/pip install requests lief Pillow orjson
-          chmod +x /tmp/pyzule/pyzule.py
-          mkdir -p /Users/runner/.config/pyzule
-          curl -L "https://github.com/nickchan9394/babelfishx/raw/main/CydiaSubstrate.framework.zip" -o /tmp/cs.zip
-          unzip /tmp/cs.zip -d /Users/runner/.config/pyzule/
+          brew install ldid dpkg pipx
+          pipx install --force https://github.com/asdfzxcvbn/pyzule-rw/archive/main.zip
+          pipx inject cyan lief
 
-
-
+     
 
       # 4. Download the decrypted YouTube IPA you provided
       - name: Download decrypted YouTube IPA
@@ -123,11 +128,9 @@ jobs:
 
 
 
-      - name: Inject tweaks with pyzule
+      - name: Inject tweaks with cyan
         run: |
-          DYLIBS=$(find /tmp/dylibs -maxdepth 1 \( -name "*.dylib" -o -name "*.framework" \) | tr '\n' ' ')
-          echo "Injecting: $DYLIBS"
-          /tmp/pyzule-env/bin/python3 /tmp/pyzule/pyzule.py -i /tmp/YouTube.ipa -f $DYLIBS -o /tmp/${{ steps.cfg.outputs.ipa_name }}
+          ~/.local/bin/cyan -i /tmp/YouTube.ipa -f /tmp/tweaks/YouMod.deb -o /tmp/${{ steps.cfg.outputs.ipa_name }}
 
 
       #- name: Inject tweaks with pyzule
