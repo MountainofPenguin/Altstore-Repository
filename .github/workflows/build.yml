@@ -43,6 +43,9 @@ jobs:
           python3 -m venv /tmp/pyzule-env
           /tmp/pyzule-env/bin/pip install requests lief Pillow orjson
           chmod +x /tmp/pyzule/pyzule.py
+          mkdir -p /Users/runner/.config/pyzule
+          curl -L "https://github.com/nickchan9394/babelfishx/raw/main/CydiaSubstrate.framework.zip" -o /tmp/cs.zip
+          unzip /tmp/cs.zip -d /Users/runner/.config/pyzule/
 
 
 
@@ -104,6 +107,19 @@ jobs:
 
           echo "Extracted dylibs:"
           ls -lh /tmp/dylibs/
+
+      - name: Pre-download pyzule dependencies
+        run: |
+          mkdir -p /Users/runner/.config/pyzule
+          /tmp/pyzule-env/bin/python3 -c "
+          import os, urllib.request
+          dest = os.path.expanduser('~/.config/pyzule')
+          os.makedirs(dest, exist_ok=True)
+          # Trigger pyzule's own dependency download by importing its setup
+          import sys
+          sys.argv = ['pyzule.py', '--help']
+          " 2>/dev/null || true
+          ls /Users/runner/.config/pyzule/
 
 
 
