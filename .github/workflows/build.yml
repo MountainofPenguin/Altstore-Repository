@@ -54,9 +54,10 @@ jobs:
       # 4. Download the decrypted YouTube IPA you provided
       - name: Download decrypted YouTube IPA
         run: |
-          curl -L "${{ steps.cfg.outputs.yt_url }}" -o /tmp/YouTube.ipa
-          echo "Downloaded IPA:"
+          curl -L --retry 3 "${{ steps.cfg.outputs.yt_url }}" -o /tmp/YouTube.ipa
           ls -lh /tmp/YouTube.ipa
+          file /tmp/YouTube.ipa
+
 
       # 5. Download YouMod tweak .deb files from the official repo
       #    Update these URLs whenever Tonwalter888 releases a new YouMod version
