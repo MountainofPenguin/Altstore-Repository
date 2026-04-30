@@ -190,7 +190,7 @@ jobs:
           echo "=== Frameworks ==="
           ls ipacheck/Payload/YouTube.app/Frameworks/
           echo "=== Dylibs ==="
-         ls ipacheck/Payload/YouTube.app/dylibs/ 2>/dev/null || echo "No dylibs dir"
+          ls ipacheck/Payload/YouTube.app/dylibs/ 2>/dev/null || echo "No dylibs dir"
 
       - name: Get IPA size
         id: size
