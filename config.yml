@@ -1,0 +1,9 @@
+# -------------------------------------------------------
+# EDIT THIS FILE to trigger a new YouMod build.
+# Change youtube_ipa_url to your latest decrypted IPA link
+# and update youtube_version to match.
+# Commit this file → GitHub Actions will build automatically.
+# -------------------------------------------------------
+
+youtube_ipa_url: "https://your-host.com/YouTube_19.xx.x_decrypted.ipa"
+youtube_version: "19.xx.x"

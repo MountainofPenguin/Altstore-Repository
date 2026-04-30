@@ -1,0 +1,36 @@
+{
+  "name": "YouMod Repo",
+  "identifier": "com.YOURNAME.youmod-repo",
+  "subtitle": "Automated YouMod builds for Signulous",
+  "description": "Auto-built YouMod IPA — updated whenever a new YouTube version is available.",
+  "iconURL": "https://raw.githubusercontent.com/YOURUSER/YOURREPO/main/assets/icon.png",
+  "website": "https://github.com/YOURUSER/YOURREPO",
+  "apps": [
+    {
+      "name": "YouMod",
+      "bundleIdentifier": "com.google.ios.youtube",
+      "developerName": "Tonwalter888 + YOURNAME",
+      "subtitle": "YouTube with YouMod tweaks",
+      "localizedDescription": "YouMod brings back YTLite-style features: ad removal, background playback, UI customisation, and more — without a paywall.",
+      "iconURL": "https://raw.githubusercontent.com/YOURUSER/YOURREPO/main/assets/icon.png",
+      "tintColor": "FF0000",
+      "screenshots": [],
+      "versions": [
+        {
+          "version": "YOUTUBE_VERSION-youmod",
+          "date": "YYYY-MM-DD",
+          "localizedDescription": "Auto-built from YouTube YOUTUBE_VERSION",
+          "downloadURL": "https://github.com/YOURUSER/YOURREPO/releases/download/vYOUTUBE_VERSION/YouMod-YOUTUBE_VERSION.ipa",
+          "size": 0,
+          "minOSVersion": "14.0",
+          "maxOSVersion": ""
+        }
+      ],
+      "appPermissions": {
+        "entitlements": [],
+        "privacy": {}
+      }
+    }
+  ],
+  "news": []
+}
