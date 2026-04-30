@@ -1,6 +1,7 @@
 {
   "name": "YouMod Repo",
-  "identifier": "com.google.ios.youtube",
+  "identifier": "com.MountainofPenguin.org",
+  "apiVersion": "v2",
   "subtitle": "Automated YouMod builds for Signulous",
   "description": "Auto-built YouMod IPA — updated whenever a new YouTube version is available.",
   "iconURL": "https://raw.githubusercontent.com/MountainofPenguin/Altstore-Repository/main/assets/IMG_2642.png",
