@@ -39,9 +39,7 @@ jobs:
       - name: Install pyzule
         run: |
           git clone https://github.com/asdfzxcvbn/pyzule /tmp/pyzule
-          pip3 install requests lief --break-system-packages
-          pip3 install requests orjson --break-system-packages
-          pip3 install requests PIL --break-system-packages
+          pip3 install requests lief orjson Pillow--break-system-packages
           chmod +x /tmp/pyzule/pyzule.py
 
 
