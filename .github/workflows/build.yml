@@ -182,7 +182,11 @@ jobs:
       - name: Inject tweaks into IPA with cyan
         run: |
           cd ${{ github.workspace }}
-          ~/.local/bin/cyan -i youtube.ipa -o "${{ env.IPA_NAME }}" -wf *.deb -n "YouTube" -b com.google.ios.youtube
+          tweaks=""
+          for f in *.deb; do
+            tweaks="$tweaks $f"
+          done
+          ~/.local/bin/cyan -i youtube.ipa -o "${{ env.IPA_NAME }}" -uwef $tweaks -n "YouTube" -b com.google.ios.youtube
 
       - name: Verify IPA contents
         run: |
