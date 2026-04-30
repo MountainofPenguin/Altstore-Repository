@@ -9,10 +9,10 @@
     {
       "name": "YouMod",
       "bundleIdentifier": "com.google.ios.youtube",
-      "developerName": "Tonwalter888 + YOURNAME",
+      "developerName": "Tonwalter888",
       "subtitle": "YouTube with YouMod tweaks",
       "localizedDescription": "YouMod brings back YTLite-style features: ad removal, background playback, UI customisation, and more — without a paywall.",
-      "iconURL": "https://raw.githubusercontent.com/MountainofPenguin/Altstore-Repository/main/assets/icon.png",
+      "iconURL": "https://raw.githubusercontent.com/MountainofPenguin/Altstore-Repository/main/assets/YouTube Icon.png",
       "tintColor": "FF0000",
       "screenshots": [],
       "versions": [
