@@ -26,14 +26,15 @@ jobs:
       - name: Read config
         id: cfg
         run: |
-          YT_URL=$(grep 'youtube_ipa_url' config.yml | sed "s/youtube_ipa_url: //;s/[\"' ]//g")
-          YT_VER=$(grep 'youtube_version' config.yml | sed "s/youtube_version: //;s/[\"' ]//g")
+          YT_URL=$(python3 -c "import re; line=open('config.yml').read(); print(re.search(r'youtube_ipa_url:\s*[\"\'](.*?)[\"\']', line).group(1))")
+          YT_VER=$(python3 -c "import re; line=open('config.yml').read(); print(re.search(r'youtube_version:\s*[\"\'](.*?)[\"\']', line).group(1))")
           echo "yt_url=$YT_URL" >> $GITHUB_OUTPUT
           echo "yt_ver=$YT_VER" >> $GITHUB_OUTPUT
           echo "tag=v$YT_VER" >> $GITHUB_OUTPUT
           echo "ipa_name=YouMod-$YT_VER.ipa" >> $GITHUB_OUTPUT
           echo "Detected YouTube version: $YT_VER"
           echo "IPA URL: $YT_URL"
+
 
       # 3. Install Azule (tweak injector)
       - name: Install Azule
