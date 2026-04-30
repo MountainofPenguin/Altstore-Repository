@@ -38,11 +38,12 @@ jobs:
       # 3. Install Azule/pyzule (tweak injector)
       - name: Install pyzule
         run: |
-          brew install ldid
+          brew install ldid dpkg
           git clone https://github.com/asdfzxcvbn/pyzule /tmp/pyzule
           python3 -m venv /tmp/pyzule-env
           /tmp/pyzule-env/bin/pip install requests lief Pillow orjson
           chmod +x /tmp/pyzule/pyzule.py
+
 
 
 
