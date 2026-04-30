@@ -3,7 +3,7 @@
   "identifier": "com.MountainofPenguin.org",
   "apiVersion": "v2",
   "subtitle": "Automated YouMod builds for Signulous",
-  "description": "Auto-built YouMod IPA — updated whenever a new YouTube version is available.",
+  "description": "Auto-built YouMod IPA \u2014 updated whenever a new YouTube version is available.",
   "iconURL": "https://raw.githubusercontent.com/MountainofPenguin/Altstore-Repository/main/assets/IMG_2642.png",
   "website": "https://github.com/MountainofPenguin/Altstore-Repository",
   "apps": [
@@ -12,11 +12,20 @@
       "bundleIdentifier": "com.google.ios.youtube",
       "developerName": "Tonwalter888",
       "subtitle": "YouTube with YouMod tweaks",
-      "localizedDescription": "YouMod brings back YTLite-style features: ad removal, background playback, UI customisation, and more — without a paywall.",
+      "localizedDescription": "YouMod brings back YTLite-style features: ad removal, background playback, UI customisation, and more \u2014 without a paywall.",
       "iconURL": "https://raw.githubusercontent.com/MountainofPenguin/Altstore-Repository/main/assets/YouTube Icon.png",
       "tintColor": "FF0000",
       "screenshots": [],
       "versions": [
+        {
+          "version": "21.16.2-youmod",
+          "date": "2026-04-30",
+          "localizedDescription": "Auto-built from YouTube 21.16.2",
+          "downloadURL": "https://github.com/MountainofPenguin/Altstore-Repository/releases/download/v21.16.2/YouMod_21.16.2.ipa",
+          "size": 119151757,
+          "minOSVersion": "14.0",
+          "maxOSVersion": ""
+        },
         {
           "version": "YOUTUBE_VERSION-youmod",
           "date": "YYYY-MM-DD",
