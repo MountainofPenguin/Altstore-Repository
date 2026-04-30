@@ -184,6 +184,14 @@ jobs:
           cd ${{ github.workspace }}
           ~/.local/bin/cyan -i youtube.ipa -o "${{ env.IPA_NAME }}" -wf *.deb -n "YouTube" -b com.google.ios.youtube
 
+      - name: Verify IPA contents
+        run: |
+          unzip -q "${{ env.IPA_NAME }}" -d ipacheck
+          echo "=== Frameworks ==="
+          ls ipacheck/Payload/YouTube.app/Frameworks/
+          echo "=== Dylibs ==="
+         ls ipacheck/Payload/YouTube.app/dylibs/ 2>/dev/null || echo "No dylibs dir"
+
       - name: Get IPA size
         id: size
         run: |
