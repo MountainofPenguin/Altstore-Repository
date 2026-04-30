@@ -71,8 +71,8 @@ jobs:
           ls -lh /tmp/tweaks/
 
       # 6. Inject all tweaks into the IPA using Azule
-       - name: Inject tweaks with Azule
-         run: |
+      - name: Inject tweaks with Azule
+        run: |
           azule -i /tmp/YouTube.ipa -f /tmp/tweaks/YouMod.deb /tmp/tweaks/YouPiP.deb /tmp/tweaks/YTUHD.deb /tmp/tweaks/ReturnYTDislikes.deb -o /tmp/${{ steps.cfg.outputs.ipa_name }}
 
 
