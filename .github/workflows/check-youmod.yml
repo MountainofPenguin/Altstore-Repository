@@ -39,19 +39,9 @@ jobs:
           LATEST="${{ steps.youmod.outputs.latest }}"
           TRACKED="${{ steps.tracked.outputs.version }}"
           echo "New YouMod version detected: $TRACKED -> $LATEST"
-
-          python3 -c "
-          import re
-          content = open('config.yml').read()
-          updated = re.sub(
-              r'(youmod_version:\s*[\"\'']).*?([\"\''])',
-              r'\g<1>${LATEST}\g<2>',
-              content
-          )
-          open('config.yml', 'w').write(updated)
-          print('config.yml updated')
-          "
-
+      
+          sed -i "s/youmod_version: ['\"][^'\"]*['\"]/youmod_version: \"$LATEST\"/" config.yml
+      
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add config.yml
