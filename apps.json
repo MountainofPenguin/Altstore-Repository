@@ -17,6 +17,15 @@
       "tintColor": "FF0000",
       "screenshots": [],
       "versions": [
+        {
+          "version": "youmod1.1.1-21.17.3",
+          "date": "2026-05-01",
+          "localizedDescription": "YouTube 21.17.3 + YouMod v1.1.1\n\n## Changelog\r\n- Fix settings bugs",
+          "downloadURL": "https://github.com/MountainofPenguin/Altstore-Repository/releases/download/v21.17.3/YouMod_1.1.1.ipa",
+          "size": 120594592,
+          "minOSVersion": "14.0",
+          "maxOSVersion": ""
+        }
       ],
       "appPermissions": {
         "entitlements": [],
