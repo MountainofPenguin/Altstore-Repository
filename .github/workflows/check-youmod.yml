@@ -29,12 +29,7 @@ jobs:
       - name: Get tracked YouMod version from config.yml
         id: tracked
         run: |
-          TRACKED=$(python3 -c "
-          import re
-          content = open('config.yml').read()
-          m = re.search(r'youmod_version:\s*[\"\'](.*?)[\"\'']', content)
-          print(m.group(1) if m else 'none')
-          ")
+          TRACKED=$(grep 'youmod_version:' config.yml | sed "s/.*youmod_version:[[:space:]]*['\"]//;s/['\"].*//")
           echo "version=$TRACKED" >> $GITHUB_OUTPUT
           echo "Tracked YouMod version: $TRACKED"
 
