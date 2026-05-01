@@ -18,6 +18,15 @@
       "screenshots": [],
       "versions": [
         {
+          "version": "youmod1.1.0-21.17.3",
+          "date": "2026-05-01",
+          "localizedDescription": "YouTube 21.17.3 + YouMod v1.1.0\n\n## Changelog\r\n- Reimplement the settings logics (#29)\r\n- Add gestures controls (#9)\r\n- Adds an option to remove \"Includes paid promotion\" (#14)\r\n- Adds an option to hide \"Suggested video\" after video playback ends\r\n- Adds an option to remove Lens button in Shorts\r\n- Adds an option to remove Trends button in Shorts\r\n- Adds a temporary fix for #31\r\n- Try to fix ads not hiding (#15)\r\n- Add Korean translations (#33)\r\n- Add French translations (#35)",
+          "downloadURL": "https://github.com/MountainofPenguin/Altstore-Repository/releases/download/v21.17.3/YouMod_1.1.0.ipa",
+          "size": 120592444,
+          "minOSVersion": "14.0",
+          "maxOSVersion": ""
+        },
+        {
           "version": "21.17.3-youmod1.1.0",
           "date": "2026-05-01",
           "localizedDescription": "YouTube 21.17.3 + YouMod v1.1.0\n\n## Changelog\r\n- Reimplement the settings logics (#29)\r\n- Add gestures controls (#9)\r\n- Adds an option to remove \"Includes paid promotion\" (#14)\r\n- Adds an option to hide \"Suggested video\" after video playback ends\r\n- Adds an option to remove Lens button in Shorts\r\n- Adds an option to remove Trends button in Shorts\r\n- Adds a temporary fix for #31\r\n- Try to fix ads not hiding (#15)\r\n- Add Korean translations (#33)\r\n- Add French translations (#35)",
