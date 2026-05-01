@@ -166,6 +166,25 @@ jobs:
           make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
           mv packages/*.deb ${{ github.workspace }}/youmod.deb
 
+      - name: Get YouMod changelog
+        run: |
+          CHANGELOG=$(curl -s "https://api.github.com/repos/Tonwalter888/YouMod/releases/latest" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            | python3 -c "
+          import sys, json, re
+          data = json.load(sys.stdin)
+          body = data.get('body', '')
+          # Strip markdown hyperlinks but keep the text
+          body = re.sub(r'__\[([^\]]+)\]\([^)]+\)__', r'\1', body)
+          body = re.sub(r'\[([^\]]+)\]\([^)]+\)', r'\1', body)
+          # Strip bold/italic markers
+          body = re.sub(r'[_*]{1,2}([^_*]+)[_*]{1,2}', r'\1', body)
+          print(body.strip())
+          ")
+          echo "YOUMOD_CHANGELOG<<EOF" >> $GITHUB_ENV
+          echo "$CHANGELOG" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
       - name: Build YouPiP
         run: |
           cd YouPiP
@@ -336,33 +355,52 @@ jobs:
         run: |
           TODAY=$(date -u +%Y-%m-%d)
           YT_VER="${{ steps.cfg.outputs.yt_ver }}"
+          YOUMOD_VER="${{ env.YOUMOD_VERSION }}"
           IPA_NAME="YouMod_${{ env.YT_VERSION }}.ipa"
           SIZE="${{ steps.size.outputs.size }}"
           REPO_USER="${{ github.repository_owner }}"
           REPO_NAME="${{ github.event.repository.name }}"
           DOWNLOAD_URL="https://github.com/$REPO_USER/$REPO_NAME/releases/download/v$YT_VER/$IPA_NAME"
-          python3 -c "
-          import json
+      
+          python3 << 'PYEOF'
+          import json, os
+      
+          yt_ver     = os.environ['YT_VER'] if 'YT_VER' in os.environ else ""
+          youmod_ver = os.environ.get('YOUMOD_VERSION', '')
+          today      = os.environ.get('TODAY', '')
+          download   = os.environ.get('DOWNLOAD_URL', '')
+          size       = int(os.environ.get('SIZE', 0))
+          changelog  = os.environ.get('YOUMOD_CHANGELOG', '').strip()
+      
+          description = f"YouTube {yt_ver} + YouMod v{youmod_ver}\n\n{changelog}" if changelog else f"Auto-built from YouTube {yt_ver} with YouMod v{youmod_ver}"
+      
           with open('apps.json') as f:
               data = json.load(f)
+      
           versions = data['apps'][0]['versions']
-          # Remove any existing entry for this YT version to avoid duplicates
-          versions = [v for v in versions if v['version'] != '${YT_VER}-youmod']
+          version_key = f"{yt_ver}-youmod{youmod_ver}"
+      
+          # Remove duplicate entries for this exact version
+          versions = [v for v in versions if v['version'] != version_key]
+      
           new_version = {
-              'version': '${YT_VER}-youmod',
-              'date': '${TODAY}',
-              'localizedDescription': 'Auto-built from YouTube ${YT_VER}',
-              'downloadURL': '${DOWNLOAD_URL}',
-              'size': ${SIZE},
+              'version': version_key,
+              'date': today,
+              'localizedDescription': description,
+              'downloadURL': download,
+              'size': size,
               'minOSVersion': '14.0',
               'maxOSVersion': ''
           }
+      
           versions.insert(0, new_version)
           data['apps'][0]['versions'] = versions[:5]
+      
           with open('apps.json', 'w') as f:
               json.dump(data, f, indent=2)
-          print('apps.json updated')
-          "
+      
+          print(f'apps.json updated: {version_key}')
+          PYEOF
 
       - name: Commit updated apps.json
         run: |
