@@ -353,19 +353,19 @@ jobs:
       # ── AltStore repo update ────────────────────────────────────────────────
       - name: Update AltStore repo JSON
         run: |
-          TODAY=$(date -u +%Y-%m-%d)
-          YT_VER="${{ steps.cfg.outputs.yt_ver }}"
-          YOUMOD_VER="${{ env.YOUMOD_VERSION }}"
-          IPA_NAME="YouMod_${{ env.YT_VERSION }}.ipa"
-          SIZE="${{ steps.size.outputs.size }}"
+          export TODAY=$(date -u +%Y-%m-%d)
+          export YT_VER="${{ steps.cfg.outputs.yt_ver }}"
+          export YOUMOD_VERSION="${{ env.YOUMOD_VERSION }}"
+          export IPA_NAME="YouMod_${{ env.YT_VERSION }}.ipa"
+          export SIZE="${{ steps.size.outputs.size }}"
           REPO_USER="${{ github.repository_owner }}"
           REPO_NAME="${{ github.event.repository.name }}"
-          DOWNLOAD_URL="https://github.com/$REPO_USER/$REPO_NAME/releases/download/v$YT_VER/$IPA_NAME"
+          export DOWNLOAD_URL="https://github.com/$REPO_USER/$REPO_NAME/releases/download/v$YT_VER/$IPA_NAME"
       
           python3 << 'PYEOF'
           import json, os
       
-          yt_ver     = os.environ['YT_VER'] if 'YT_VER' in os.environ else ""
+          yt_ver     = os.environ.get('YT_VER', '')
           youmod_ver = os.environ.get('YOUMOD_VERSION', '')
           today      = os.environ.get('TODAY', '')
           download   = os.environ.get('DOWNLOAD_URL', '')
@@ -379,8 +379,6 @@ jobs:
       
           versions = data['apps'][0]['versions']
           version_key = f"{yt_ver}-youmod{youmod_ver}"
-      
-          # Remove duplicate entries for this exact version
           versions = [v for v in versions if v['version'] != version_key]
       
           new_version = {
