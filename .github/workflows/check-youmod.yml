@@ -1,0 +1,68 @@
+name: Check for new YouMod release
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'  # every 6 hours
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  check:
+    name: Check YouMod release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Get latest YouMod release
+        id: youmod
+        run: |
+          LATEST=$(curl -s "https://api.github.com/repos/Tonwalter888/YouMod/releases/latest" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            | python3 -c "import sys,json; print(json.load(sys.stdin)['tag_name'].lstrip('v'))")
+          echo "latest=$LATEST" >> $GITHUB_OUTPUT
+          echo "Latest YouMod release: $LATEST"
+
+      - name: Get tracked YouMod version from config.yml
+        id: tracked
+        run: |
+          TRACKED=$(python3 -c "
+          import re
+          content = open('config.yml').read()
+          m = re.search(r'youmod_version:\s*[\"\'](.*?)[\"\'']', content)
+          print(m.group(1) if m else 'none')
+          ")
+          echo "version=$TRACKED" >> $GITHUB_OUTPUT
+          echo "Tracked YouMod version: $TRACKED"
+
+      - name: Update config.yml if new version found
+        if: steps.youmod.outputs.latest != steps.tracked.outputs.version
+        run: |
+          LATEST="${{ steps.youmod.outputs.latest }}"
+          TRACKED="${{ steps.tracked.outputs.version }}"
+          echo "New YouMod version detected: $TRACKED -> $LATEST"
+
+          python3 -c "
+          import re
+          content = open('config.yml').read()
+          updated = re.sub(
+              r'(youmod_version:\s*[\"\'']).*?([\"\''])',
+              r'\g<1>${LATEST}\g<2>',
+              content
+          )
+          open('config.yml', 'w').write(updated)
+          print('config.yml updated')
+          "
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add config.yml
+          git commit -m "Auto: bump YouMod tracked version to $LATEST"
+          git push
+
+      - name: No update needed
+        if: steps.youmod.outputs.latest == steps.tracked.outputs.version
+        run: echo "YouMod is already at ${{ steps.tracked.outputs.version }}, no build needed."
