@@ -326,7 +326,7 @@ jobs:
           done
           echo "Injecting: $tweaks"
           cyan -i youtube.ipa \
-               -o "YouMod_${{ env.YT_VERSION }}.ipa" \
+               -o "YouMod_${{ env.YOUMOD_VERSION }}.ipa" \
                -uwef $tweaks \
                -n "YouTube" \
                -b com.google.ios.youtube
@@ -334,7 +334,7 @@ jobs:
       - name: Get IPA size
         id: size
         run: |
-          SIZE=$(stat -f%z "${{ github.workspace }}/YouMod_${{ env.YT_VERSION }}.ipa")
+          SIZE=$(stat -f%z "${{ github.workspace }}/YouMod_${{ env.YOUMOD_VERSION }}.ipa")
           echo "size=$SIZE" >> $GITHUB_OUTPUT
 
       # ── Release ────────────────────────────────────────────────────────────
@@ -347,7 +347,7 @@ jobs:
             Auto-built YouMod IPA for YouTube ${{ steps.cfg.outputs.yt_ver }}
             YouMod version: ${{ env.YOUMOD_VERSION }}
             Built by GitHub Actions run ${{ github.run_id }}
-          files: ${{ github.workspace }}/YouMod_${{ env.YT_VERSION }}.ipa
+          files: ${{ github.workspace }}/YouMod_${{ env.YOUMOD_VERSION }}.ipa
           make_latest: true
 
       # ── AltStore repo update ────────────────────────────────────────────────
@@ -356,7 +356,7 @@ jobs:
           export TODAY=$(date -u +%Y-%m-%d)
           export YT_VER="${{ steps.cfg.outputs.yt_ver }}"
           export YOUMOD_VERSION="${{ env.YOUMOD_VERSION }}"
-          export IPA_NAME="YouMod_${{ env.YT_VERSION }}.ipa"
+          export IPA_NAME="YouMod_${{ env.YOUMOD_VERSION }}.ipa"
           export SIZE="${{ steps.size.outputs.size }}"
           REPO_USER="${{ github.repository_owner }}"
           REPO_NAME="${{ github.event.repository.name }}"
@@ -378,7 +378,7 @@ jobs:
               data = json.load(f)
       
           versions = data['apps'][0]['versions']
-          version_key = f"{yt_ver}-youmod{youmod_ver}"
+          version_key = f"youmod{youmod_ver}-{yt_ver}"
           versions = [v for v in versions if v['version'] != version_key]
       
           new_version = {
