@@ -17,6 +17,14 @@
       "tintColor": "FF0000",
       "screenshots": [],
       "versions": [
+        {
+          "version": "21.17.3",
+          "date": "2026-05-03",
+          "localizedDescription": "YouTube 21.17.3 + YouMod v1.2.1\n\n## Changelog\r\n- Improve speed gestures logic",
+          "downloadURL": "https://github.com/MountainofPenguin/Altstore-Repository/releases/download/v21.17.3/YouMod_1.2.1.ipa",
+          "size": 120629073,
+          "minOSVersion": "14.0"
+        }
       ],
       "appPermissions": {
         "entitlements": [],
