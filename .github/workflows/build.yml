@@ -326,7 +326,7 @@ jobs:
           done
           echo "Injecting: $tweaks"
           cyan -i youtube.ipa \
-               -o "YouMod_${{ env.YOUMOD_VERSION }}.ipa" \
+               -o "YouMod_${{ env.YOUMOD_VERSION }}_${{ steps.cfg.outputs.yt_ver }}.ipa" \
                -uwef $tweaks \
                -n "YouTube" \
                -b com.google.ios.youtube
@@ -334,20 +334,20 @@ jobs:
       - name: Get IPA size
         id: size
         run: |
-          SIZE=$(stat -f%z "${{ github.workspace }}/YouMod_${{ env.YOUMOD_VERSION }}.ipa")
+          SIZE=$(stat -f%z "${{ github.workspace }}/YouMod_${{ env.YOUMOD_VERSION }}_${{ steps.cfg.outputs.yt_ver }}.ipa")
           echo "size=$SIZE" >> $GITHUB_OUTPUT
 
       # ── Release ────────────────────────────────────────────────────────────
       - name: Upload IPA to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.cfg.outputs.tag }}
-          name: "YouMod ${{ steps.cfg.outputs.yt_ver }}"
+          tag_name: v${{ env.YOUMOD_VERSION }}
+          name: "YouMod ${{ env.YOUMOD_VERSION }}"
           body: |
-            Auto-built YouMod IPA for YouTube ${{ steps.cfg.outputs.yt_ver }}
+            Auto-updated YouMod IPA for YouTube ${{ steps.cfg.outputs.yt_ver }}
             YouMod version: ${{ env.YOUMOD_VERSION }}
             Built by GitHub Actions run ${{ github.run_id }}
-          files: ${{ github.workspace }}/YouMod_${{ env.YOUMOD_VERSION }}.ipa
+          files: ${{ github.workspace }}/YouMod_${{ env.YOUMOD_VERSION }}_${{ steps.cfg.outputs.yt_ver }}.ipa
           make_latest: true
 
       # ── AltStore repo update ────────────────────────────────────────────────
@@ -356,11 +356,11 @@ jobs:
           export TODAY=$(date -u +%Y-%m-%d)
           export YT_VER="${{ steps.cfg.outputs.yt_ver }}"
           export YOUMOD_VERSION="${{ env.YOUMOD_VERSION }}"
-          export IPA_NAME="YouMod_${{ env.YOUMOD_VERSION }}.ipa"
+          export IPA_NAME="YouMod_${{ env.YOUMOD_VERSION }}_${{ steps.cfg.outputs.yt_ver }}.ipa"
           export SIZE="${{ steps.size.outputs.size }}"
           REPO_USER="${{ github.repository_owner }}"
           REPO_NAME="${{ github.event.repository.name }}"
-          export DOWNLOAD_URL="https://github.com/$REPO_USER/$REPO_NAME/releases/download/v$YT_VER/$IPA_NAME"
+          export DOWNLOAD_URL="https://github.com/$REPO_USER/$REPO_NAME/releases/download/v$YOUMOD_VERSION/$IPA_NAME"
       
           python3 << 'PYEOF'
           import json, os
