@@ -378,7 +378,7 @@ jobs:
               data = json.load(f)
       
           versions = data['apps'][0]['versions']
-          version_key = f"youmod{youmod_ver}-{yt_ver}"
+          version_key = yt_ver
           versions = [v for v in versions if v['version'] != version_key]
       
           new_version = {
