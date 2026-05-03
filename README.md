@@ -4,7 +4,7 @@
 
 ---
 
-## 📲 How to Add This Repo
+## How to Add This Repo
 
 1. Open **AltStore / SideStore / Feather** on your device
 2. Navigate to **Sources** or **Repos**
@@ -20,7 +20,7 @@ https://raw.githubusercontent.com/MountainofPenguin/Altstore-Repository/main/app
 
 ---
 
-## ✅ Currently Supported
+## Currently Supported
 
 | | |
 |---|---|
@@ -31,7 +31,7 @@ https://raw.githubusercontent.com/MountainofPenguin/Altstore-Repository/main/app
 
 ---
 
-## 🔧 Included Tweaks
+## Included Tweaks
 
 | Tweak | Description |
 |---|---|
@@ -58,7 +58,7 @@ https://raw.githubusercontent.com/MountainofPenguin/Altstore-Repository/main/app
 
 ---
 
-## ⚙️ How Automatic Builds Work
+## How Automatic Builds Work
 
 This repo builds and publishes a new YouMod IPA automatically — no manual intervention needed.
 
