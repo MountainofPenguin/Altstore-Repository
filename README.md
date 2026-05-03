@@ -1,6 +1,6 @@
 # YouMod Repo
 
-> Automated YouMod IPA builds delivered straight to your AltStore, SideStore, or Feather. Update your YouTube version, sit back — the repo handles the rest.
+> Automated YouMod IPA builds delivered straight to your AltStore, SideStore, or Feather. 100% no need to fork GitHub repos or find your own decrypted IPA files!
 
 ---
 
@@ -60,7 +60,7 @@ https://raw.githubusercontent.com/MountainofPenguin/Altstore-Repository/main/app
 
 ## How Automatic Builds Work
 
-This repo builds and publishes a new YouMod IPA automatically — no manual intervention needed.
+This repo builds and publishes a new YouMod IPA automatically.
 
 ```
 YouMod update detected
