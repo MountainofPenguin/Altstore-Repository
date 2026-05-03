@@ -20,9 +20,9 @@
         {
           "version": "21.17.3",
           "date": "2026-05-03",
-          "localizedDescription": "YouTube 21.17.3 + YouMod v1.2.2\n\n## Changelog\r\n- Fix settings not updating the selections\r\n- Adds a OLED theme option (#53)",
-          "downloadURL": "https://github.com/MountainofPenguin/Altstore-Repository/releases/download/v21.17.3/YouMod_1.2.2.ipa",
-          "size": 120628867,
+          "localizedDescription": "YouTube 21.17.3 + YouMod v1.2.3\n\n## Changelog\r\n- Adds the hide Shorts shelf option back and Cleanup. (#52)\r\n- Adds a option to replace next/previous buttons with forward/back buttons.\r\n- Adds a option to disable hints.\r\n- Adds a option to forcibly enables miniplayer (especially kid videos).\r\n- Adds a option to always show seekbar in fullscreen mode.\r\n- Update French translations (#56)",
+          "downloadURL": "https://github.com/MountainofPenguin/Altstore-Repository/releases/download/v21.17.3/YouMod_1.2.3.ipa",
+          "size": 120641684,
           "minOSVersion": "14.0"
         }
       ],
