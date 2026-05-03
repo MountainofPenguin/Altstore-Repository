@@ -387,8 +387,7 @@ jobs:
               'localizedDescription': description,
               'downloadURL': download,
               'size': size,
-              'minOSVersion': '14.0',
-              'maxOSVersion': ''
+              'minOSVersion': '14.0'
           }
       
           versions.insert(0, new_version)
