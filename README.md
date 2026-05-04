@@ -1,6 +1,6 @@
 # YouMod Repo
 
-> Automated YouMod IPA builds delivered straight to your AltStore, SideStore, or Feather. 100% no need to fork GitHub repos or find your own decrypted IPA files!
+Automated YouMod IPA builds delivered straight to your AltStore, SideStore, or Feather. 100% no need to fork GitHub repos or find your own decrypted IPA files!
 
 ---
 
