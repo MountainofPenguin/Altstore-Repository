@@ -2,8 +2,9 @@
 # Editing this file will trigger a new ipa build workflow
 # https://decrypt.whoeevee.com/packages/r2vwjp2s/com.google.ios.youtube-21.16.2.ipa
 # https://decrypt.whoeevee.com/packages/vnuvtpbt/com.google.ios.youtube-21.17.3.ipa
+# https://decrypt.whoeevee.com/packages/knushrtf/com.google.ios.youtube-21.18.4.ipa
 # -------------------------------------------------------
 
-youtube_ipa_url: "https://decrypt.whoeevee.com/packages/vnuvtpbt/com.google.ios.youtube-21.17.3.ipa"
-youtube_version: "21.17.3"
+youtube_ipa_url: "https://decrypt.whoeevee.com/packages/knushrtf/com.google.ios.youtube-21.18.4.ipa"
+youtube_version: "21.18.4"
 youmod_version: "1.2.3"
