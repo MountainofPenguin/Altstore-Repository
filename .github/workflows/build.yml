@@ -399,10 +399,22 @@ jobs:
           print(f'apps.json updated: {version_key}')
           PYEOF
 
-      - name: Commit updated apps.json
+      - name: Update README supported versions
+        run: |
+          TODAY=$(date -u +"%B %-d, %Y")
+          YT_VER="${{ steps.cfg.outputs.yt_ver }}"
+          YOUMOD_VER="${{ env.YOUMOD_VERSION }}"
+
+          sed -i "" \
+            -e "s/| \*\*YouTube version\*\* | .* |/| **YouTube version** | $YT_VER |/" \
+            -e "s/| \*\*YouMod version\*\* | .* |/| **YouMod version** | $YOUMOD_VER |/" \
+            -e "s/| \*\*Last built\*\* | .* |/| **Last built** | $TODAY |/" \
+            README.md
+
+      - name: Commit updated apps.json and README
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add apps.json
-          git commit -m "Auto-update: YouMod for YouTube ${{ steps.cfg.outputs.yt_ver }}"
+          git add apps.json README.md
+          git commit -m "Auto-update: YouMod ${{ env.YOUMOD_VERSION }} for YouTube ${{ steps.cfg.outputs.yt_ver }}"
           git push
