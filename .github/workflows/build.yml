@@ -51,6 +51,14 @@ jobs:
       - name: Install Dependencies
         run: brew install make ldid swiftlint
 
+      # Gonerino runs `go run scripts/generate_changelog_header.go` in a before-all hook.
+      # Go is installed on the runner image but not on PATH, so set it up explicitly.
+      - name: Set up Go (needed by Gonerino)
+        uses: actions/setup-go@v5
+        with:
+          go-version: stable
+          cache: false
+
       - name: Set PATH Environment Variables
         run: |
           echo "$(brew --prefix make)/libexec/gnubin" >> $GITHUB_PATH
