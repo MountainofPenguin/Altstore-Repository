@@ -67,15 +67,18 @@ jobs:
           git checkout
           mv *.sdk $THEOS/sdks
 
-      # Theos only adds -F<SDK>/System/Library/PrivateFrameworks to the *compile* flags and
-      # relies on ld64 auto-searching it at link time. ld64 shipped with current Xcode no
-      # longer does that, so `-framework Preferences` (Alderis/lcpshim → libcolorpicker)
-      # fails with "ld: framework 'Preferences' not found". Mirror the search paths into
-      # the linker flags, the same way Theos does for the compiler.
+      # Private frameworks (e.g. Preferences, used by Alderis/lcpshim → libcolorpicker)
+      # are not linkable out of the box any more:
+      #   * Theos only passes -F<SDK>/System/Library/PrivateFrameworks to the compiler and
+      #     leaves it to ld64 to find them at link time.
+      #   * Current Xcode iOS SDKs ship no System/Library/PrivateFrameworks at all, and
+      #     ld64 no longer auto-searches it.
+      # So add the matching Theos SDKs (the ones this workflow downloads, e.g. 18.6) to the
+      # linker search paths, mirroring what Theos does for the compiler.
       - name: Patch Theos private framework linker paths
         run: |
           RULES="$THEOS/makefiles/instance/rules.mk"
-          LINE='_THEOS_INTERNAL_LDFLAGS += $(foreach path,$(_THEOS_INTERNAL_SEARCHPATHS),$(if $(path),-F$(path)))'
+          LINE='_THEOS_INTERNAL_LDFLAGS += $(foreach path,$(_THEOS_INTERNAL_SEARCHPATHS) $(wildcard $(THEOS_SDKS_PATH)/*.sdk/System/Library/PrivateFrameworks),$(if $(path),-F$(path)))'
           grep -qF "$LINE" "$RULES" || printf '\n%s\n' "$LINE" >> "$RULES"
           tail -2 "$RULES"
 
