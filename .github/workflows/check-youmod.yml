@@ -2,11 +2,12 @@ name: Check for new YouMod release
 
 on:
   schedule:
-    - cron: '0 */2 * * *'  # every 6 hours
+    - cron: '0 */2 * * *'  # every 2 hours
   workflow_dispatch:
 
 permissions:
   contents: write
+  actions: write
 
 jobs:
   check:
@@ -20,7 +21,7 @@ jobs:
       - name: Get latest YouMod release
         id: youmod
         run: |
-          LATEST=$(curl -s "https://api.github.com/repos/Tonwalter888/YouMod/releases/latest" \
+          LATEST=$(curl -sSf "https://api.github.com/repos/Tonwalter888/YouMod/releases/latest" \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             | python3 -c "import sys,json; print(json.load(sys.stdin)['tag_name'].lstrip('v'))")
           echo "latest=$LATEST" >> $GITHUB_OUTPUT
@@ -32,6 +33,22 @@ jobs:
           TRACKED=$(grep 'youmod_version:' config.yml | sed "s/.*youmod_version:[[:space:]]*['\"]//;s/['\"].*//")
           echo "version=$TRACKED" >> $GITHUB_OUTPUT
           echo "Tracked YouMod version: $TRACKED"
+
+      # The build workflow publishes a release tagged v<YouMod version>, so a missing
+      # release means the previous build never finished. Without this check a single
+      # failed build would stall the repo until the next YouMod release.
+      - name: Check whether this YouMod version was already built
+        id: built
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if gh release view "v${{ steps.youmod.outputs.latest }}" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "Release v${{ steps.youmod.outputs.latest }} already exists."
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "No release for v${{ steps.youmod.outputs.latest }} yet - a build is needed."
+          fi
 
       - name: Update config.yml if new version found
         if: steps.youmod.outputs.latest != steps.tracked.outputs.version
@@ -49,14 +66,15 @@ jobs:
           git push
       
       - name: Trigger build workflow
-        if: steps.youmod.outputs.latest != steps.tracked.outputs.version
+        if: steps.youmod.outputs.latest != steps.tracked.outputs.version || steps.built.outputs.exists != 'true'
         run: |
-          curl -X POST \
-            -H "Authorization: Bearer ${{ secrets.PAT_TOKEN }}" \
+          curl -sSf -X POST \
+            -H "Authorization: Bearer ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github+json" \
             "https://api.github.com/repos/${{ github.repository }}/actions/workflows/build.yml/dispatches" \
             -d '{"ref":"main"}'
+          echo "Build workflow dispatched."
 
       - name: No update needed
-        if: steps.youmod.outputs.latest == steps.tracked.outputs.version
-        run: echo "YouMod is already at ${{ steps.tracked.outputs.version }}, no build needed."
+        if: steps.youmod.outputs.latest == steps.tracked.outputs.version && steps.built.outputs.exists == 'true'
+        run: echo "YouMod v${{ steps.tracked.outputs.version }} is already built - nothing to do."
