@@ -33,7 +33,8 @@ https://raw.githubusercontent.com/MountainofPenguin/Altstore-Repository/main/app
 
 ## Included Tweaks
 
-Only these four tweaks are compiled in — nothing else.
+Only these tweaks are compiled in — nothing else. YTVideoOverlay is a hard runtime
+dependency of YTUHD (its reload button registers through YTVideoOverlay), so it rides along.
 
 | Tweak | Description |
 |---|---|
@@ -41,6 +42,7 @@ Only these four tweaks are compiled in — nothing else.
 | [YTUHD](https://github.com/Tonwalter888/YTUHD) | Unlocks 1440p and 2160p resolutions in the iOS YouTube app. |
 | [Return YouTube Dislikes](https://github.com/PoomSmart/Return-YouTube-Dislikes) | Brings back the dislike count on YouTube videos. |
 | [DontEatMyContent](https://github.com/therealFoxster/DontEatMyContent) | Prevents the player from hiding behind the notch or Dynamic Island. |
+| [YTVideoOverlay](https://github.com/PoomSmart/YTVideoOverlay) | Not a separate feature — YTUHD is built as a YTVideoOverlay plugin and crashes without it, so it ships alongside. |
 
 ---
 
@@ -71,6 +73,6 @@ A failed build is retried by the next scheduled check, so the repo does not get 
 | Developer | Tweaks |
 |---|---|
 | [Tonwalter888](https://github.com/Tonwalter888) | YouMod, YTUHD |
-| [PoomSmart](https://github.com/PoomSmart) | Return YouTube Dislikes |
+| [PoomSmart](https://github.com/PoomSmart) | Return YouTube Dislikes, YTVideoOverlay |
 | [therealFoxster](https://github.com/therealFoxster) | DontEatMyContent |
 | [asdfzxcvbn](https://github.com/asdfzxcvbn) | cyan (IPA injection tool) |

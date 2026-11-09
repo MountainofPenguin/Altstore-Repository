@@ -110,6 +110,12 @@ jobs:
       - name: Clone YouMod
         run: git clone --quiet --depth=1 https://github.com/Tonwalter888/YouMod.git
 
+      # YTUHD is a YTVideoOverlay plugin: ReloadVideo.x imports ../YTVideoOverlay/Init.x
+      # and its %ctor calls into YTVideoOverlay, so the sources must sit side by side and
+      # YTVideoOverlay.dylib has to be loaded at runtime (otherwise YTUHD crashes on load).
+      - name: Clone YTVideoOverlay
+        run: git clone --quiet --depth=1 https://github.com/PoomSmart/YTVideoOverlay.git
+
       - name: Clone YTUHD
         run: git clone --quiet --depth=1 https://github.com/Tonwalter888/YTUHD.git
 
@@ -125,6 +131,13 @@ jobs:
           echo "YOUMOD_VERSION=$(grep '^Version:' control | cut -d ' ' -f2)" >> $GITHUB_ENV
           make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
           mv packages/*.deb ${{ github.workspace }}/youmod.deb
+
+      # Runtime dependency of YTUHD (see the Clone YTUHD note above).
+      - name: Build YTVideoOverlay
+        run: |
+          cd YTVideoOverlay
+          make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
+          mv packages/*.deb ${{ github.workspace }}/ytvo.deb
 
       - name: Get YouMod changelog
         run: |
