@@ -91,6 +91,20 @@ jobs:
           cp -r $THEOS/include/YouTubeHeader $THEOS/include/YTHeaders
           git clone --quiet --depth=1 https://github.com/PoomSmart/PSHeader.git $THEOS/include/PSHeader
 
+      # YouMod (2.x) does `#import <roothide.h>` unconditionally in Files/Headers.h.
+      # roothide.h (plus the roothide/ directory it pulls in) ships with roothide/theos
+      # under vendor/include, so plain theos/theos does not have it. Drop it into
+      # $THEOS/include, which is searched before vendor/include.
+      # Pinned to a commit so an upstream rewrite cannot silently break the build.
+      - name: Install RootHide headers (roothide.h)
+        run: |
+          git clone --quiet https://github.com/roothide/headers.git /tmp/roothide-headers
+          cd /tmp/roothide-headers
+          git checkout --quiet e1132e2bbc3ca15c50e2311bcd349cb7353409e1
+          cp -f roothide.h "$THEOS/include/"
+          cp -R roothide "$THEOS/include/"
+          ls -l "$THEOS/include/roothide.h" "$THEOS/include/roothide/"
+
       # ── Tweak sources ──────────────────────────────────────────────────────
       - name: Clone YouMod
         run: git clone --quiet --depth=1 https://github.com/Tonwalter888/YouMod.git
