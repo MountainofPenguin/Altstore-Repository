@@ -33,28 +33,14 @@ https://raw.githubusercontent.com/MountainofPenguin/Altstore-Repository/main/app
 
 ## Included Tweaks
 
+Only these four tweaks are compiled in — nothing else.
+
 | Tweak | Description |
 |---|---|
 | [YouMod](https://github.com/Tonwalter888/YouMod) | The core tweak. Ad removal, background playback, UI customisation, and more — without a paywall. |
-| [YouPiP](https://github.com/PoomSmart/YouPiP) | Enables native Picture-in-Picture on the iOS YouTube app. |
 | [YTUHD](https://github.com/Tonwalter888/YTUHD) | Unlocks 1440p and 2160p resolutions in the iOS YouTube app. |
 | [Return YouTube Dislikes](https://github.com/PoomSmart/Return-YouTube-Dislikes) | Brings back the dislike count on YouTube videos. |
-| [YTABConfig](https://github.com/PoomSmart/YTABConfig) | Configures A/B settings in the iOS YouTube app. |
-| [YouSpeed](https://github.com/PoomSmart/YouSpeed) | View and change video playback speed faster. |
-| [YouMute](https://github.com/PoomSmart/YouMute) | Mute/unmute videos faster. |
-| [YouLoop](https://github.com/bhackel/YouLoop) | Loop YouTube videos seamlessly. |
-| [YouSlider](https://github.com/PoomSmart/YouSlider) | Customises the YouTube video slider and scrubber. |
-| [YouChooseQuality](https://github.com/PoomSmart/YouChooseQuality) | Auto-selects your preferred video quality. |
-| [YouShare](https://github.com/Tonwalter888/YouShare) | Share videos faster from the iOS YouTube app. |
-| [YouGetCaption](https://github.com/PoomSmart/YouGetCaption) | View and copy captions from YouTube videos. |
 | [DontEatMyContent](https://github.com/therealFoxster/DontEatMyContent) | Prevents the player from hiding behind the notch or Dynamic Island. |
-| [iSponsorBlock](https://github.com/Galactic-Dev/iSponsorBlock) | Automatically skips sponsored segments in YouTube videos. |
-| [Gonerino](https://github.com/castdrian/Gonerino) | Filter videos, channels, and keywords from your feed. |
-| [YTweaks](https://github.com/fosterbarnes/YTweaks) | Various quality-of-life tweaks for the iOS YouTube app. |
-| [YTHoldForSpeed](https://github.com/joshuaseltzer/YTHoldForSpeed) | Hold on the video player to toggle a selected playback speed. |
-| [youtube-native-share](https://github.com/jkhsjdhjs/youtube-native-share) | Replaces YouTube's share sheet with the native iOS one. |
-| [VolumeBoostYT](https://github.com/VasirakCalgux/VolumeBoostYT) | Gesture-based volume control completely separate from system volume. |
-| [Open in YouTube](https://github.com/BillyCurtis/OpenYouTubeSafariExtension) | Safari extension to open YouTube links directly in the app. |
 
 ---
 
@@ -63,20 +49,20 @@ https://raw.githubusercontent.com/MountainofPenguin/Altstore-Repository/main/app
 This repo builds and publishes a new YouMod IPA automatically.
 
 ```
-YouMod update detected
+Scheduled workflow checks for a new YouMod release (every 2 hours)
         ↓
-Scheduled workflow checks YouMod releases every 3 hours
+config.yml is bumped to the new YouMod version
         ↓
-New YouTube IPA detected via Telegram watcher service
+GitHub Actions compiles the four tweaks from source
         ↓
-GitHub Actions compiles all tweaks from source
+cyan injects them into the decrypted YouTube IPA
         ↓
-cyan injects tweaks into the YouTube IPA
-        ↓
-apps.json updated with new version, size, and changelog
+apps.json and a GitHub release updated with the new version, size and changelog
 ```
 
-You will always get the latest YouMod on the latest compatible YouTube version with zero manual steps.
+The YouTube version and its decrypted IPA URL are pinned in [`config.yml`](config.yml) — edit either value and push to trigger a new build manually.
+
+A failed build is retried by the next scheduled check, so the repo does not get stuck on a broken version.
 
 ---
 
@@ -84,15 +70,7 @@ You will always get the latest YouMod on the latest compatible YouTube version w
 
 | Developer | Tweaks |
 |---|---|
-| [Tonwalter888](https://github.com/Tonwalter888) | YouMod, YTUHD, YouShare |
-| [PoomSmart](https://github.com/PoomSmart) | YouPiP, YouSpeed, YouMute, YouLoop, YouSlider, YouChooseQuality, YouGetCaption, YTABConfig, Return YouTube Dislikes |
-| [asdfzxcvbn](https://github.com/asdfzxcvbn) | cyan (IPA injection tool) |
+| [Tonwalter888](https://github.com/Tonwalter888) | YouMod, YTUHD |
+| [PoomSmart](https://github.com/PoomSmart) | Return YouTube Dislikes |
 | [therealFoxster](https://github.com/therealFoxster) | DontEatMyContent |
-| [castdrian](https://github.com/castdrian) | Gonerino |
-| [Galactic-Dev](https://github.com/Galactic-Dev) | iSponsorBlock |
-| [fosterbarnes](https://github.com/fosterbarnes) | YTweaks |
-| [joshuaseltzer](https://github.com/joshuaseltzer) | YTHoldForSpeed |
-| [bhackel](https://github.com/bhackel) | YouLoop |
-| [jkhsjdhjs](https://github.com/jkhsjdhjs) | youtube-native-share |
-| [VasirakCalgux](https://github.com/VasirakCalgux) | VolumeBoostYT |
-| [BillyCurtis](https://github.com/BillyCurtis) | Open in YouTube Safari Extension |
+| [asdfzxcvbn](https://github.com/asdfzxcvbn) | cyan (IPA injection tool) |
