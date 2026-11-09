@@ -67,6 +67,18 @@ jobs:
           git checkout
           mv *.sdk $THEOS/sdks
 
+      # Theos only adds -F<SDK>/System/Library/PrivateFrameworks to the *compile* flags and
+      # relies on ld64 auto-searching it at link time. ld64 shipped with current Xcode no
+      # longer does that, so `-framework Preferences` (Alderis/lcpshim → libcolorpicker)
+      # fails with "ld: framework 'Preferences' not found". Mirror the search paths into
+      # the linker flags, the same way Theos does for the compiler.
+      - name: Patch Theos private framework linker paths
+        run: |
+          RULES="$THEOS/makefiles/instance/rules.mk"
+          LINE='_THEOS_INTERNAL_LDFLAGS += $(foreach path,$(_THEOS_INTERNAL_SEARCHPATHS),$(if $(path),-F$(path)))'
+          grep -qF "$LINE" "$RULES" || printf '\n%s\n' "$LINE" >> "$RULES"
+          tail -2 "$RULES"
+
       - name: Install cyan
         run: |
           pipx install --force https://github.com/asdfzxcvbn/pyzule-rw/archive/main.zip
